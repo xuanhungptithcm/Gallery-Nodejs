@@ -1,14 +1,19 @@
+/* eslint-disable global-require */
 const mongoose = require('mongoose');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
 
 let server;
-mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
+mongoose.connect(config.mongoose.url, config.mongoose.options).then(async () => {
   logger.info('Connected to MongoDB');
   server = app.listen(config.port, () => {
     logger.info(`Listening to port ${config.port}`);
   });
+
+  await require('./utils/imageHelper').checkListImageOrigin();
+  await require('./utils/reduceSizeImage').handleResizeImage();
+  await require('./utils/syncImageS3').syncImageS3();
 });
 
 const exitHandler = () => {
