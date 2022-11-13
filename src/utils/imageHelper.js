@@ -37,18 +37,18 @@ async function convertHeicToJPG(imagePath, outputPath, originName = Date.now()) 
   }
 }
 
-async function reduceSizeImage(imagePath, originName) {
+async function reduceSizeImage(imagePath, originName, type = 'jpeg') {
   await sharp(imagePath)
     .resize({
       fit: sharp.fit.contain,
-      height: 312,
+      height: 350,
     })
     .withMetadata()
-    .toFormat('jpeg')
+    .toFormat(type)
     .toFile(path.join(folderPath.imagesResize, `${originName}`));
   return true;
 }
-async function reduceKeepImage(imagePath, originName) {
+async function reduceKeepImage(imagePath, originName, type = 'jpeg') {
   const metadata = await getMetadata(imagePath);
   await sharp(imagePath)
     .resize({
@@ -56,8 +56,9 @@ async function reduceKeepImage(imagePath, originName) {
       height: metadata.height,
       width: metadata.width,
     })
+    .rotate()
+    .toFormat(type)
     .withMetadata()
-    .toFormat('jpeg')
     .toFile(path.join(folderPath.imagesOriginResize, `${originName}`));
   return true;
 }

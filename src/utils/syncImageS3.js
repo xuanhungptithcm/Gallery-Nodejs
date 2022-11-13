@@ -17,12 +17,12 @@ async function syncImageS3() {
     const bucket = process.env.BUCKET;
     const s3Url = process.env.S3_URL;
     const s3UrlImage = `${s3Url}/${bucket}/${file}`;
-    const s3OriginUrlImage = `${s3Url}/${bucket}/origin/${file}`;
+    const originWebpName = `${file.split('.').slice(0, -1).join('')}.webp`;
+    const s3OriginUrlImage = `${s3Url}/${bucket}/origin/${originWebpName}`;
     await uploadImageS3(inPath, file, bucket);
-    await uploadImageS3(path.join(folderPath.imagesOriginResize, file), `origin/${file}`, bucket);
+    await uploadImageS3(path.join(folderPath.imagesOriginResize, originWebpName), `origin/${originWebpName}`, bucket);
     const metadata = await getMetadata(inPath);
     const blurhash = await encodeImageToBlurhash(inPath);
-    console.log('🚀 ~ file: syncImageS3.js ~ line 25 ~ syncImageS3 ~ blurhash', blurhash);
     const image = new ImageModel({
       _id: mongoose.Types.ObjectId(),
       name: file,
@@ -36,7 +36,7 @@ async function syncImageS3() {
     });
     await ImageModel.insertMany([image]);
     fse.remove(inPath);
-    await fse.remove(path.join(folderPath.imagesOriginResize, file));
+    await fse.remove(path.join(folderPath.imagesOriginResize, originWebpName));
     await fse.remove(path.join(folderPath.imagesJpeg, file));
   }
 }

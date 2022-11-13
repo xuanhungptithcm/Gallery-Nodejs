@@ -8,8 +8,9 @@ const { reduceSizeImage, reduceKeepImage } = require('./imageHelper');
 async function handleResizeImage() {
   const listFile = fs.readdirSync(folderPath.imagesJpeg);
   for (const file of listFile) {
-    await reduceSizeImage(path.join(folderPath.imagesJpeg, file), file);
-    await reduceKeepImage(path.join(folderPath.imagesJpeg, file), file);
+    const fileName = file.split('.').slice(0, -1).join('');
+    await reduceSizeImage(path.join(folderPath.imagesJpeg, file), `${fileName}.jpeg`, 'jpeg');
+    await reduceKeepImage(path.join(folderPath.imagesJpeg, file), `${fileName}.webp`, 'webp');
   }
 }
 module.exports = {
