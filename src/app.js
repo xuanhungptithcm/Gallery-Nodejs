@@ -16,6 +16,8 @@ const ApiError = require('./utils/ApiError');
 
 const app = express();
 
+const allowlist = ['http://localhost:3000', process.env.FE_URL];
+
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
@@ -38,8 +40,8 @@ app.use(mongoSanitize());
 app.use(compression());
 
 // enable cors
-app.use(cors());
-app.options('*', cors());
+app.use(cors({ origin: allowlist }));
+// app.options('*', cors());
 
 // jwt authentication
 app.use(passport.initialize());

@@ -32,6 +32,10 @@ const imageSchema = mongoose.Schema(
       require: true,
     },
     owner: { type: mongoose.Types.ObjectId, ref: 'User' },
+    blurhash: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

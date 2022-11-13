@@ -1,6 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable security/detect-non-literal-fs-filename */
+const { encode } = require('blurhash');
+
 const sharp = require('sharp');
 const path = require('path');
 const convert = require('heic-convert');
@@ -46,6 +48,32 @@ async function reduceSizeImage(imagePath, originName) {
     .toFile(path.join(folderPath.imagesResize, `${originName}`));
   return true;
 }
+async function reduceKeepImage(imagePath, originName) {
+  const metadata = await getMetadata(imagePath);
+  await sharp(imagePath)
+    .resize({
+      fit: sharp.fit.contain,
+      height: metadata.height,
+      width: metadata.width,
+    })
+    .withMetadata()
+    .toFormat('jpeg')
+    .toFile(path.join(folderPath.imagesOriginResize, `${originName}`));
+  return true;
+}
+
+async function encodeImageToBlurhash(imagePath) {
+  return new Promise((resolve) => {
+    sharp(imagePath)
+      .raw()
+      .ensureAlpha()
+      .resize(32, 32, { fit: 'inside' })
+      .toBuffer((err, buffer, { width, height }) => {
+        if (err) return resolve('');
+        resolve(encode(new Uint8ClampedArray(buffer), width, height, 4, 4));
+      });
+  });
+}
 
 async function handleConvertImage(imagePath, originName) {
   const metadata = await getMetadata(imagePath);
@@ -82,6 +110,8 @@ module.exports = {
   getMetadata,
   convertHeicToJPG,
   reduceSizeImage,
+  reduceKeepImage,
   uploadImageS3,
   checkListImageOrigin,
+  encodeImageToBlurhash,
 };
