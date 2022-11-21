@@ -16,7 +16,14 @@ const ApiError = require('./utils/ApiError');
 
 const app = express();
 
-const allowlist = ['http://localhost:3000', process.env.FE_URL];
+const allowlist = [
+  'http://localhost:3000',
+  'http://127.0.0.1:8000',
+  'http://127.0.0.1',
+  '::ffff:127.0.0.1',
+  'http://3.144.24.80',
+  process.env.FE_URL,
+];
 
 if (config.env !== 'test') {
   app.use(morgan.successHandler);

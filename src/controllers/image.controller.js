@@ -9,6 +9,13 @@ const getImages = catchAsync(async (req, res) => {
   res.send(result);
 });
 
+const createMessage = catchAsync(async (req, res) => {
+  const { content } = req.body || {};
+  const result = await imageService.createMessage(content);
+  res.send(result);
+});
+
 module.exports = {
   getImages,
+  createMessage,
 };
